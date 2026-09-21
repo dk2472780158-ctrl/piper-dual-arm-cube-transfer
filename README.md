@@ -35,8 +35,21 @@ It was developed on a physical workstation driving two PiPER arms over CAN, and 
 
 ---
 
+## Demos
+
+The clip at the top of this page is the **left** arm carrying the cube left→right. Below is the other half of the loop — the **right** arm carrying it back.
+
+<img src="assets/demo_r2l.gif" width="330" alt="The right arm carrying the cube from the purple pad back to the yellow one">
+
+<sub>Right→left, on the bench rig. Real time, no speed-up.</sub>
+
+Both directions run back to back inside one process, with only the arm that just moved being reset in between — see [How it works](#how-it-works). The full 62-second recording of a multi-stage run, resets included, is [`assets/loop_full_recording.mp4`](assets/loop_full_recording.mp4) (1.6 MB, H.264). GitHub does not play MP4 files inline from a repository, so that one is a download rather than a player.
+
+---
+
 ## Table of contents
 
+- [Demos](#demos)
 - [Results, honestly](#results-honestly)
 - [Hardware](#hardware)
 - [How it works](#how-it-works)
@@ -68,6 +81,12 @@ This project does **not** publish a success rate, because the loop logs record o
 | Rerun fast overlay (`launch/fast/`) | **Unit-checked only** | `probe_fastlog.py unit` passes; the three `*_fast.sh` launchers have **never** run on hardware. Do not read it as "verified to help". |
 | Success rate | **Not measured** | See the note above. |
 
+Both directions, as they appear in the viewer during a run — the two camera panes show the pads, the two plot rows show the joint signals:
+
+| Left→right — the left arm's joints are the busy ones | Right→left — the right arm's |
+|---|---|
+| <img src="assets/rerun_l2r.png" alt="Rerun viewer during a left-to-right transfer: left-arm joint curves active, cube leaving the yellow pad"> | <img src="assets/rerun_r2l.png" alt="Rerun viewer during a right-to-left transfer: right-arm joint curves active, cube leaving the purple pad"> |
+
 Two measured numbers worth keeping, because they are what motivated `launch/fast/`:
 
 | Run | Steps/s | ms per step | p95 | worst single step |
@@ -81,6 +100,10 @@ The third row is the interesting one: "Rerun is slow" was never the real story. 
 ---
 
 ## Hardware
+
+<img src="assets/hardware_setup.jpg" width="620" alt="Two PiPER arms either side of a grey bench, with a yellow pad and a purple pad on the work surface and a small pink cube on the yellow one">
+
+<sub>The bench: two PiPER arms, a start pad (yellow) and a goal pad (purple). The cube is the pink block.</sub>
 
 | Item | Detail |
 |---|---|
@@ -357,7 +380,13 @@ The checkpoint the launchers load is set in two places — the shell variable `C
 
 ## Rerun telemetry
 
-Every step logs **42 scalar curves** — 28 observation dimensions and 14 action dimensions — plus three camera streams, under the entity names `observation.*` and `action.*`. Recordings can be written to disk and reopened later:
+Every step logs **42 scalar curves** — 28 observation dimensions and 14 action dimensions — plus three camera streams, under the entity names `observation.*` and `action.*`.
+
+<img src="assets/rerun_joint_curves.png" width="820" alt="A grid of Rerun plots: observation.left_joint_1 through 6 and observation.right_joint plots, with two camera panes showing the arms">
+
+<sub>A few seconds of the 42 curves, next to the camera panes. The flat green line is the idle arm — the normalisation-flooring problem in [How it works](#how-it-works) starts here.</sub>
+
+Recordings can be written to disk and reopened later:
 
 ```bash
 rerun recording.rrd          # or: python -m rerun recording.rrd

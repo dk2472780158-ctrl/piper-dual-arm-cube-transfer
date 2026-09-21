@@ -42,8 +42,24 @@
 
 ---
 
+## 演示
+
+页面顶部那个动图是**左臂**在把方块从左搬到右。下面是循环的另一半——**右臂**把它搬回来。
+
+<img src="assets/demo_r2l.gif" width="330" alt="右臂把方块从紫色垫子搬回黄色垫子">
+
+<sub>右→左，真机拍摄。原速，没有加速。</sub>
+
+两个方向在**同一个进程里**背靠背跑，中间只归位刚刚动过的那条臂——见[工作原理](#工作原理)。
+一次多段运行（含段间归位）的**完整 62 秒录像**在
+[`assets/loop_full_recording.mp4`](assets/loop_full_recording.mp4)（1.6 MB，H.264）。
+GitHub 不会内联播放仓库里的 MP4，所以那个是下载而不是播放器。
+
+---
+
 ## 目录
 
+- [演示](#演示)
 - [如实说明的实测结果](#如实说明的实测结果)
 - [硬件](#硬件)
 - [工作原理](#工作原理)
@@ -76,6 +92,12 @@
 | Rerun 快版（`launch/fast/`） | **只过了单元自检** | `probe_fastlog.py unit` 通过；三个 `*_fast.sh` **从未在真机上跑过**。别把它当成"已验证能提升成功率"。 |
 | 成功率 | **没有测量** | 见上。 |
 
+两个方向在查看器里的样子——上面两块是相机画面，两排曲线是对应各臂的关节信号：
+
+| 左→右——忙的是左臂的关节 | 右→左——忙的是右臂的 |
+|---|---|
+| <img src="assets/rerun_l2r.png" alt="左到右运行时的 Rerun 查看器：左臂关节曲线在动，方块正在离开黄色垫子"> | <img src="assets/rerun_r2l.png" alt="右到左运行时的 Rerun 查看器：右臂关节曲线在动，方块正在离开紫色垫子"> |
+
 有两个值得留档的实测数字，因为正是它们引出了 `launch/fast/`：
 
 | 运行 | 频率 | 每步 | p95 | 单步最大 |
@@ -91,6 +113,10 @@
 ---
 
 ## 硬件
+
+<img src="assets/hardware_setup.jpg" width="620" alt="两条 PiPER 臂分列灰色台面两侧，台面上一块黄色垫子和一块紫色垫子，粉色方块在黄色垫子上">
+
+<sub>台面：两条 PiPER 臂，起点垫（黄）与目标垫（紫），方块就是那块粉色的。</sub>
 
 | 项目 | 说明 |
 |---|---|
@@ -398,7 +424,14 @@ ACT 公共设置：`chunk_size=100`、`n_action_steps=50`、`n_obs_steps=1`、`b
 ## Rerun 遥测
 
 每一步记录 **42 条曲线** —— 28 维观测 + 14 维动作 —— 外加三路相机画面，实体名在
-`observation.*` 和 `action.*` 下。录像可以落盘、之后再看：
+`observation.*` 和 `action.*` 下。
+
+<img src="assets/rerun_joint_curves.png" width="820" alt="Rerun 里成片的曲线图：observation.left_joint_1 到 6 以及 observation.right_joint 各维，旁边两块是相机画面">
+
+<sub>42 条曲线里的几秒，右边是相机画面。那条**拉平的绿线就是不动的那条臂**——[工作原理](#工作原理)
+里说的归一化下限问题，源头就在这。</sub>
+
+录像可以落盘、之后再看：
 
 ```bash
 rerun recording.rrd          # 或者：python -m rerun recording.rrd
