@@ -1,0 +1,46 @@
+NOTICE
+======
+
+piper-dual-arm-cube-transfer
+Copyright 2026 the piper-dual-arm-cube-transfer contributors
+
+This product includes software developed at Hugging Face
+(https://huggingface.co/) as part of LeRobot
+(https://github.com/huggingface/lerobot), licensed under the Apache License,
+Version 2.0.
+
+--------------------------------------------------------------------------------
+Files derived from LeRobot
+--------------------------------------------------------------------------------
+
+The following files are copies — some modified — of files from the LeRobot
+project, and retain their original copyright headers:
+
+    lerobot_snapshot/scripts/piper_cube_record.py
+        derived from src/lerobot/scripts/lerobot_record.py
+        Copyright The HuggingFace Inc. team. All rights reserved.
+
+    lerobot_snapshot/utils/visualization_utils.py
+        derived from src/lerobot/utils/visualization_utils.py
+        Copyright The HuggingFace Inc. team. All rights reserved.
+
+    lerobot_snapshot/robots/piper_dual/piper_dual.py
+    lerobot_snapshot/teleoperators/piper_dual_leader/piper_dual_leader.py
+    lerobot_snapshot/motors/piper/piper_slave.py
+        PiPER support added on top of LeRobot's robot/teleoperator/motor
+        abstractions.
+
+The LeRobot license text is the same Apache License, Version 2.0 reproduced in
+LICENSE, so no separate copy is required. Their directory layout is preserved
+under lerobot_snapshot/ so that a diff against your own LeRobot checkout is a
+plain `diff -r`.
+
+--------------------------------------------------------------------------------
+Third-party dependencies
+--------------------------------------------------------------------------------
+
+This repository does not vendor its dependencies. At runtime it uses, among
+others: LeRobot (Apache-2.0), PyTorch (BSD-3-Clause), Rerun (Apache-2.0 /
+MIT, see the Rerun project for the split), OpenCV (Apache-2.0), NumPy
+(BSD-3-Clause) and Pillow (MIT-CMU). Each is the property of its respective
+owners and is governed by its own license.

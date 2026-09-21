@@ -1,0 +1,42 @@
+# Example udev rules giving the three task cameras stable names.
+#
+# WHY: /dev/videoN numbers are handed out in USB enumeration order, which can
+# change between reboots or when a device is replugged.  If the "left" camera
+# and the "middle" camera swap places, every policy is fed a scrambled
+# observation and the arm moves to the wrong place.  Symlinks keyed on
+# something stable (by-id path or serial) remove that failure mode.
+#
+# Fill in YOUR device values, then:
+#     sudo cp 99-piper-cameras.rules /etc/udev/rules.d/
+#     sudo udevadm control --reload-rules && sudo udevadm trigger
+#     ls -l /dev/camera_*        # expect three symlinks to /dev/videoN
+#
+# Find the values for a camera you have just plugged in:
+#     udevadm info --query=all --name=/dev/video0
+#     udevadm info --attribute-walk --name=/dev/video0 | grep -E 'serial|KERNELS'
+#
+# Prefer ATTRS{serial} when the camera exposes one; fall back to the physical
+# USB port path (KERNELS) when it does not, and keep each camera in the same
+# port from then on.
+
+# --- cam A: left -----------------------------------------------------------------
+SUBSYSTEM=="video4linux", KERNEL=="video*", \
+  ATTRS{serial}=="REPLACE_WITH_CAMERA_A_SERIAL", \
+  ATTR{index}=="0", \
+  SYMLINK+="camera_left"
+
+# --- cam B: middle ---------------------------------------------------------------
+SUBSYSTEM=="video4linux", KERNEL=="video*", \
+  ATTRS{serial}=="REPLACE_WITH_CAMERA_B_SERIAL", \
+  ATTR{index}=="0", \
+  SYMLINK+="camera_middle"
+
+# --- cam C: right ----------------------------------------------------------------
+SUBSYSTEM=="video4linux", KERNEL=="video*", \
+  ATTRS{serial}=="REPLACE_WITH_CAMERA_C_SERIAL", \
+  ATTR{index}=="0", \
+  SYMLINK+="camera_right"
+
+# Note the ATTR{index}=="0" clause.  A single UVC camera usually exposes several
+# /dev/video nodes (capture, metadata, ...); index 0 is the capture node.  Without
+# this clause all of them match and the symlink points at whichever wins.

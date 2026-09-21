@@ -1,0 +1,18 @@
+# The control stack itself -- torch, lerobot, opencv-python, pyarrow, and the
+# rest -- comes from your LeRobot installation.  See the "Installation"
+# section of README.md.
+#
+# These are the extra packages that this repository's own tooling needs on top
+# of that.
+
+# Rerun telemetry.  >= 0.31.3 is a hard requirement: rr.Scalars and
+# rr.set_sinks do not exist in older SDKs, and --display_data=true fails at
+# start-up with an AttributeError without them.
+rerun-sdk>=0.31.3
+
+# Array handling in the Rerun fast overlay and in the probe scripts.
+numpy
+
+# tools/log2png.py renders loop logs to PNG.  Also used by the image path in
+# LeRobot's visualization_utils.py.
+Pillow

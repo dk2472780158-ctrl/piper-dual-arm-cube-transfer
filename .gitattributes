@@ -1,0 +1,10 @@
+# These scripts run under bash on Linux.  Pin the line endings to LF so a
+# checkout on Windows does not produce CRLF files that bash refuses to run.
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.rrd binary

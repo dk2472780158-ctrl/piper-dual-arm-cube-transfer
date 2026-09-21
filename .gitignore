@@ -1,0 +1,16 @@
+# --- local configuration (machine-specific paths) ---------------------------
+# Copy this to config/env.local.sh and edit it; never commit it.
+config/env.local.sh
+
+# --- runtime artifacts ------------------------------------------------------
+__pycache__/
+*.pyc
+.pycache/
+*.log
+logs/
+resident_logs/
+resident_new_env_logs/
+*.rrd
+*.lock
+.run.lock
+.DS_Store

@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "PiPER Dual-Arm Cube Transfer"
+abstract: >-
+  A bidirectional pick-and-place stack for two AgileX PiPER arms: two
+  independent ACT policies (one per direction), a resident control loop that
+  loads both models once and alternates directions, temporal ensembling at
+  inference, and a Rerun telemetry path that does not block the 30 Hz control
+  loop.
+type: software
+version: 1.0.0
+date-released: "2026-09-21"
+license: Apache-2.0
+repository-code: "https://github.com/dk2472780158-ctrl/piper-dual-arm-cube-transfer"
+keywords:
+  - robotics
+  - imitation-learning
+  - act
+  - action-chunking-transformer
+  - bimanual-manipulation
+  - pickup-and-place
+  - lerobot
+  - piper
+  - teleoperation
+  - rerun
+authors:
+  - name: "piper-dual-arm-cube-transfer contributors"
+    alias: dk2472780158-ctrl

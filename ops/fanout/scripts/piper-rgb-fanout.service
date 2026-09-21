@@ -1,0 +1,34 @@
+# systemd unit *template* — edit the paths below for your machine before
+# installing, or put them in /etc/default/piper-rgb-fanout (any of the
+# Environment= values can be overridden there).
+#
+# systemd expands $VAR / ${VAR} in Environment=, WorkingDirectory= and
+# ExecStart=.  Install with ops/fanout/scripts/install_piper_rgb_fanout_service.sh
+
+[Unit]
+Description=PiPER RGB idle fan-out publisher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Uncomment and set to the unprivileged account that owns the cameras.
+#User=piper
+#Group=piper
+EnvironmentFile=-/etc/default/piper-rgb-fanout
+Environment=PIPER_FANOUT_ROOT=/opt/piper-fanout
+Environment=PIPER_PYTHON=/usr/bin/python3
+Environment=PIPER_RGB_PUBLISH_CAMERAS=all
+Environment=PIPER_RGB_PUBLISH_FPS=15
+Environment=PYTHONPATH=${PIPER_FANOUT_ROOT}
+WorkingDirectory=${PIPER_FANOUT_ROOT}
+ExecStart=${PIPER_PYTHON} -u ${PIPER_FANOUT_ROOT}/fanout/camera_fanout_daemon.py
+Restart=on-failure
+RestartSec=10
+# Not enabled by default: the cameras belong to the task runner.  Start this
+# only for the idle preview, and stop it again before a task takes the cameras.
+
+[Install]
+# The installer disables this unit right after enabling it; start it by hand
+# when you actually want the idle preview.
+WantedBy=multi-user.target
