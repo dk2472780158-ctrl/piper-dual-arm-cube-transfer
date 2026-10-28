@@ -59,6 +59,7 @@ Both directions run back to back inside one process, with only the arm that just
 - [Quick start](#quick-start)
 - [Script reference](#script-reference)
 - [Training your own policies](#training-your-own-policies)
+- [Simulator](#simulator)
 - [Rerun telemetry](#rerun-telemetry)
 - [Troubleshooting](#troubleshooting)
 - [Limitations and roadmap](#limitations-and-roadmap)
@@ -158,6 +159,8 @@ For more detail see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | `lerobot_snapshot/` | Read-only snapshot of the LeRobot-side files this project modifies. |
 | `tools/log2png.py` | Renders a loop log (`.jsonl`) into a PNG plot. |
 | `docs/` | Architecture, hardware, Rerun deep-dive, troubleshooting. |
+| `sim/` | The MuJoCo replica of the cell: data generation, sim training entries, domain-gap probes. |
+| `assets/meshes/` | The two arms' STL meshes, referenced by `sim/scene.xml` as `../assets/meshes`. |
 
 `lerobot_snapshot/` is a *snapshot*, not a fork: it mirrors the paths inside the LeRobot source tree so you can diff it against your own checkout. The files are Apache-2.0, Copyright The HuggingFace Team — see [NOTICE](NOTICE).
 
@@ -378,6 +381,25 @@ The checkpoint the launchers load is set in two places — the shell variable `C
 
 ---
 
+## Simulator
+
+`sim/` is a MuJoCo replica of the same cell, built for two purposes: making training data without occupying the arms, and measuring what a policy does when the pictures come from the simulator instead of the cameras.
+
+The mechanism is replay. A recorded demonstration is played back through the physics engine, and the renders are written out as a lerobot v3.0 dataset with the identical schema — 14-dim action, 28-dim state, three 480×640 cameras, 30 fps. Each episode randomises the surfaces, the two lights, where the cube is put down, its mass and friction, and both arms' start pose, so none of that becomes something the policy can key on. A take runs twice: cameras off to check that it lands, then cameras on to record it — that double pass is where the ~89 s per episode goes. `sim/piper_dual_sim.py` exposes the same call surface as the real `piper_dual` robot, so the recording loop drives either one unchanged.
+
+| Command (from `sim/`) | What it does |
+|---|---|
+| `gen_sim_data.py --episodes 80 --out cube_sim_v1` | Records 80 episodes into the lerobot cache. `CUBE_SIM_LENS=1` additionally applies the fitted lens model. |
+| `train_sim_act.sh` / `train_sim_act.sh --from-scratch` | Trains ACT on sim data; without the flag it fine-tunes from a real-data checkpoint, with it the run starts cold. |
+| `train_mix_act.sh` | Trains on the merged real + sim dataset. |
+| `policy_probe*.py` | Replays one demonstration through picture variants and reports how far the policy drifts. |
+
+It needs MuJoCo with EGL (`MUJOCO_GL=egl`), `imageio`, and lerobot 0.4.4. The arm meshes live in `assets/meshes/`, next to `sim/`, because `scene.xml` points at them as `../assets/meshes`. `ROOT` (the demonstration dataset) and `CKPT` (the starting checkpoint) are absolute paths from the lab machine — change them before running anywhere else. [`sim/README.md`](sim/README.md) lists every file.
+
+What it has shown so far. Trained on real + sim data, the policy transfers to the bench: 3/3 stages on hardware, checked frame by frame. Trained on sim data alone but fine-tuned from a real checkpoint, it solves 5/5 trials inside the simulator. A cold start from simulated pictures alone does **not** transfer — fed recorded frames, the same weights drift 0.220 rad mean against 0.010 rad on rendered ones, the commanded motion shrinks to a third of the demonstration's span, and in closed loop the output collapses to the dataset's mean pose. Matching the colour statistics of the recorded frames before inference changes nothing (0.220 → 0.228 rad), so the gap is in what the pictures contain, not how they are tinted.
+
+---
+
 ## Rerun telemetry
 
 Every step logs **42 scalar curves** — 28 observation dimensions and 14 action dimensions — plus three camera streams, under the entity names `observation.*` and `action.*`.
@@ -452,7 +474,7 @@ Read this before running anything in `launch/` or `ops/`.
 
 ## License and acknowledgements
 
-Apache-2.0 — see [LICENSE](LICENSE). The files under `lerobot_snapshot/` are derived from [LeRobot](https://github.com/huggingface/lerobot) (Copyright The HuggingFace Team, Apache-2.0); see [NOTICE](NOTICE).
+Apache-2.0 — see [LICENSE](LICENSE). The files under `lerobot_snapshot/` are derived from [LeRobot](https://github.com/huggingface/lerobot) (Copyright The HuggingFace Team, Apache-2.0); see [NOTICE](NOTICE). The STL meshes in `assets/meshes/` are the PiPER arm model from AgileX's `piper_description` package and remain under their own terms.
 
 Built on [LeRobot](https://github.com/huggingface/lerobot) for the policy stack, [Rerun](https://rerun.io/) for telemetry, and AgileX PiPER hardware driven over CAN.
 

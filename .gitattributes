@@ -8,3 +8,7 @@
 *.jpeg binary
 *.gif binary
 *.rrd binary
+
+# MuJoCo meshes and other binary assets
+*.stl binary
+*.STL binary

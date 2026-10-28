@@ -69,6 +69,7 @@ GitHub 不会内联播放仓库里的 MP4，所以那个是下载而不是播放
 - [快速上手](#快速上手)
 - [脚本速查](#脚本速查)
 - [训练自己的策略](#训练自己的策略)
+- [仿真环境](#仿真环境)
 - [Rerun 遥测](#rerun-遥测)
 - [排错](#排错)
 - [已知缺陷与后续计划](#已知缺陷与后续计划)
@@ -189,6 +190,8 @@ chunk，真正下发的动作是对所有覆盖当前步的预测做指数加权
 | `lerobot_snapshot/` | 本项目改动过的 LeRobot 侧文件只读快照。 |
 | `tools/log2png.py` | 把循环日志（`.jsonl`）画成 PNG。 |
 | `docs/` | 架构、硬件、Rerun 深入、排错。 |
+| `sim/` | MuJoCo 仿真复刻：造仿真数据、仿真侧训练入口、域差探针。 |
+| `assets/meshes/` | 两臂的 STL 网格，`sim/scene.xml` 以 `../assets/meshes` 引用。 |
 
 `lerobot_snapshot/` 是**快照**不是 fork：目录结构与 LeRobot 源码树一一对应，方便你直接
 和自己的 checkout 做 diff。这些文件是 Apache-2.0，版权归 The HuggingFace Team —— 见
@@ -418,6 +421,37 @@ ACT 公共设置：`chunk_size=100`、`n_action_steps=50`、`n_obs_steps=1`、`b
 
 启动脚本加载的 checkpoint 写在**两处** —— 每个 `launch/*.sh` 顶部的 `CHECKPOINT` 变量，
 以及 `loop_runner/resident_new_env.py` 里的 `CHECKPOINTS` 字典。训了新策略两处都要改。
+
+---
+
+## 仿真环境
+
+`sim/` 是同一台工作站的 MuJoCo 复刻，两个用途：不占着机械臂也能造训练数据；以及量"画面换成
+仿真以后，策略会怎么变"。
+
+机制是**重放**。把录好的真机示教动作在物理引擎里放一遍，把渲染结果按完全相同的 schema 写成
+lerobot v3.0 数据集 —— action 14 维、state 28 维、三路 480×640、30 fps。每集随机化表面材质、
+两盏灯、方块落点、质量与摩擦、双臂起始位，这些就不会变成策略能抓住的线索。一拍跑两遍：先关
+渲染验它落不落地，落地了再开渲染录 —— 每集约 89 秒就是花在这两遍上。
+`sim/piper_dual_sim.py` 对外接口与真机 `piper_dual` 一致，录制循环不用改一行就能驱动其中任意一个。
+
+| 命令（在 `sim/` 下） | 做什么 |
+|---|---|
+| `gen_sim_data.py --episodes 80 --out cube_sim_v1` | 录 80 集进 lerobot 缓存；加 `CUBE_SIM_LENS=1` 同时套用拟合好的镜头模型。 |
+| `train_sim_act.sh` / `train_sim_act.sh --from-scratch` | 用仿真数据训 ACT；不带参数从真机权重微调，带参数则从零开始。 |
+| `train_mix_act.sh` | 用真假合并后的数据集训练。 |
+| `policy_probe*.py` | 同一条示教换不同画面变体重放，看策略偏多少。 |
+
+依赖 MuJoCo + EGL（`MUJOCO_GL=egl`）、`imageio`、lerobot 0.4.4。两臂的 STL 放在与 `sim/`
+同级的 `assets/meshes/`，因为 `scene.xml` 按 `../assets/meshes` 去找。脚本顶部的 `ROOT`
+（示教数据集）与 `CKPT`（起点权重）是本机绝对路径，换机器先改。逐个文件的说明见
+[`sim/README.md`](sim/README.md)。
+
+目前量到的结果。真假数据一起训，策略能上真机：真机 3/3 段，逐帧核对过。只用仿真数据、但起点
+取真机权重微调，仿真里 5/5 次成功。**纯仿真冷启动跨不过去** —— 同一权重喂真机帧平均偏
+0.220 rad，喂渲染帧只偏 0.010 rad；指令的动作跨度缩到示教的三分之一，闭环里输出直接塌到数据集
+平均姿态。把真机帧的色调拉到仿真那一套再喂，结果不变（0.220 → 0.228 rad），说明差在画面内容
+本身，不在色调。
 
 ---
 

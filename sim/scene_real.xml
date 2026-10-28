@@ -1,0 +1,291 @@
+<mujoco model="piper_cube">
+  <compiler angle="radian" autolimits="true" meshdir="../assets/meshes" texturedir="textures"/>
+  <option timestep="0.002" integrator="implicitfast" cone="elliptic" impratio="10"/>
+  <visual><global offwidth="1280" offheight="960"/><quality shadowsize="8192" offsamples="8"/></visual>
+  <asset>
+    <mesh name="base_link" file="base_link.STL"/>
+    <mesh name="link1" file="link1.STL"/>
+    <mesh name="link2" file="link2.STL"/>
+    <mesh name="link3" file="link3.STL"/>
+    <mesh name="link4" file="link4.STL"/>
+    <mesh name="link5" file="link5.STL"/>
+    <mesh name="link6" file="link6.STL"/>
+    <mesh name="gripper_base" file="gripper_base.STL"/>
+    <mesh name="link7" file="link7.STL"/>
+    <mesh name="link8" file="link8.STL"/>
+    <texture name="tex_table" type="2d" file="table.png"/>
+    <material name="piper" rgba="0.22 0.23 0.25 1" specular="0.4" shininess="0.3"/>
+    <material name="tabletop" rgba="0.3223 0.3570 0.3539 1" specular="0.1" shininess="0.05" texture="tex_table" texrepeat="6 6" texuniform="true"/>
+    <material name="mat_yellow" rgba="0.579 0.531 0.347 1" specular="0"/>
+    <material name="mat_purple" rgba="0.481 0.408 0.565 1" specular="0"/>
+    <material name="cube_pink" rgba="0.752 0.376 0.478 1" specular="0"/>
+    <material name="backdrop" rgba="0.86 0.87 0.85 1"/>
+    <material name="rig_black" rgba="0.075 0.075 0.082 1" specular="0.15" shininess="0.2"/>
+  </asset>
+  <worldbody>
+    <light name="key" pos="0.1 0.0 2.0" dir="-0.18 0.12 -1" directional="true" diffuse="0.50 0.50 0.50" ambient="0.20 0.20 0.20" specular="0.08 0.08 0.08" castshadow="true"/>
+    <light name="fill" pos="-1.0 1.0 1.2" dir="0.6 -0.6 -0.8" directional="true" diffuse="0.22 0.22 0.22" ambient="0.10 0.10 0.10" castshadow="false"/>
+    <geom name="floor" type="plane" size="3 3 0.05" pos="0 0 0" material="backdrop" contype="2" conaffinity="5"/>
+    <geom name="wall_far" type="box" size="1.1 0.04 1.0" pos="0 1.1 1.0" material="backdrop" contype="0" conaffinity="0"/>
+    <geom name="wall_left" type="box" size="0.04 1.1 1.0" pos="-1.1 0 1.0" material="backdrop" contype="0" conaffinity="0"/>
+    <geom name="wall_right" type="box" size="0.04 1.1 1.0" pos="1.1 0 1.0" material="backdrop" contype="0" conaffinity="0"/>
+    <geom name="table" type="box" size="0.55 0.75 0.02" pos="0 0 0.692" material="tabletop" contype="2" conaffinity="5"/>
+    <geom name="yellow_mat" type="cylinder" size="0.0694 0.0015" pos="0.0 0.111 0.7134999999999999" material="mat_yellow" contype="2" conaffinity="5"/>
+    <geom name="purple_mat" type="cylinder" size="0.0694 0.0015" pos="0.0 -0.111 0.7134999999999999" material="mat_purple" contype="2" conaffinity="5"/>
+    <body name="cube" pos="0.02 -0.114 0.7303999999999999" quat="0.984808 0 0 0.173648">
+      <freejoint name="cube_free"/>
+      <geom name="cube_geom" type="box" size="0.0154 0.0154 0.0154" mass="0.03" material="cube_pink" friction="1.4 0.05 0.001" contype="1" conaffinity="2"/>
+    </body>
+    <body name="left_mount" pos="-0.3565 0.3050 0.7120" euler="0 0 -0.026180">
+      <inertial pos="-0.00473641164191482 2.56829134630247E-05 0.041451518036016" mass="1.02" fullinertia="0.00267433 0.00282612 0.00089624 -7.3e-07 -0.00017389 4e-07"/>
+      <geom type="mesh" mesh="base_link" material="piper" group="1" contype="0" conaffinity="0"/>
+      <geom type="mesh" mesh="base_link" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+      <body name="left_link1" pos="0 0 0.123" quat="1 0 0 0">
+        <joint name="left_joint1" type="hinge" axis="0 0 1" range="-2.618 2.618" damping="0.5" armature="0.01"/>
+        <inertial pos="0.000121504734057468 0.000104632162460536 -0.00438597309559853" mass="0.71" fullinertia="0.00048916 0.00040472 0.00043982 -3.6e-07 -2.24e-06 -2.42e-06"/>
+        <geom type="mesh" mesh="link1" material="piper" group="1" contype="0" conaffinity="0"/>
+        <geom type="mesh" mesh="link1" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+        <body name="left_link2" pos="0 0 0" quat="0.0480084367 -0.048013443 -0.705476101 -0.705473862">
+          <joint name="left_joint2" type="hinge" axis="-0 -0 -1" range="-3.14 -0" damping="0.5" armature="0.01"/>
+          <inertial pos="0.198666145229743 -0.010926924140076 0.00142121714502687" mass="1.17" fullinertia="0.00116918 0.0678538 0.0677449 -0.00180037 0.00025146 -4.55e-06"/>
+          <geom type="mesh" mesh="link2" material="piper" group="1" contype="0" conaffinity="0"/>
+          <geom type="mesh" mesh="link2" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+          <body name="left_link3" pos="0.28503 0 0" quat="0.62399622 0 0 -0.781427359">
+            <joint name="left_joint3" type="hinge" axis="-0 -0 -1" range="-0 2.967" damping="0.5" armature="0.01"/>
+            <inertial pos="-0.0202737662122021 -0.133914995944595 -0.000458682652737356" mass="0.5" fullinertia="0.0136171 0.00045024 0.0138032 0.00165794 -4.8e-07 -4.5e-07"/>
+            <geom type="mesh" mesh="link3" material="piper" group="1" contype="0" conaffinity="0"/>
+            <geom type="mesh" mesh="link3" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+            <body name="left_link4" pos="-0.021984 -0.25075 0" quat="0.707105483 0.70710808 0 0">
+              <joint name="left_joint4" type="hinge" axis="-0 -0 -1" range="-1.745 1.745" damping="0.5" armature="0.01"/>
+              <inertial pos="-9.66635791618542E-05 0.000876064475651083 -0.00496880904640868" mass="0.38" fullinertia="0.00018501 0.00018965 0.00015484 5.4e-07 1.2e-06 -8.41e-06"/>
+              <geom type="mesh" mesh="link4" material="piper" group="1" contype="0" conaffinity="0"/>
+              <geom type="mesh" mesh="link4" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+              <body name="left_link5" pos="0 0 0" quat="0.707105483 -0.70710808 0 0">
+                <joint name="left_joint5" type="hinge" axis="-0 -0 -1" range="-1.22 1.22" damping="0.5" armature="0.01"/>
+                <inertial pos="-4.10554118924211E-05 -0.0566486692356075 -0.0037205791677906" mass="0.383" fullinertia="0.00166169 0.0001851 0.00164321 6e-08 -7e-08 1.026e-05"/>
+                <geom type="mesh" mesh="link5" material="piper" group="1" contype="0" conaffinity="0"/>
+                <geom type="mesh" mesh="link5" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+                <body name="left_link6" pos="8.8259E-05 -0.091 0" quat="0.707105483 0.70710808 0 0">
+                  <joint name="left_joint6" type="hinge" axis="0 0 1" range="-2.0944 2.0944" damping="0.5" armature="0.01"/>
+                  <inertial pos="-8.82590762930069E-05 9.0598378529832E-06 -0.002" mass="0.007" fullinertia="5.73016e-07 5.73016e-07 1.06739e-06 -1.98305e-22 -7.27919e-23 -3.4146e-24"/>
+                  <geom type="mesh" mesh="link6" material="piper" group="1" contype="0" conaffinity="0"/>
+                  <geom type="mesh" mesh="link6" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+                  <body name="left_gripper_base" pos="0 0 0" quat="1 0 0 0">
+                    <inertial pos="-0.000183807162235591 8.05033155577911E-05 0.0321436689908876" mass="0.45" fullinertia="0.00092934 0.00071447 0.00039442 3.4e-07 -7.38e-06 5e-08"/>
+                    <geom type="mesh" mesh="gripper_base" material="piper" group="1" contype="0" conaffinity="0"/>
+                    <geom type="mesh" mesh="gripper_base" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+                    <camera name="left" pos="-0.0823 0.0159 0.0209" quat="-0.11500187 -0.67809819 0.70352922 0.17889679" fovy="36.148"/>
+                    <body name="left_link7" pos="0 0.000000 0.1358" quat="0.707105483 0.70710808 0 0">
+                      <joint name="left_joint7" type="slide" axis="0 0 1" range="0 0.035" damping="0.5" armature="0.01"/>
+                      <inertial pos="0.00065123185041968 -0.0491929869131989 0.00972258769184025" mass="0.025" fullinertia="7.371e-05 7.81e-06 7.47e-05 -1.13e-06 2.1e-07 -1.372e-05"/>
+                      <geom type="box" pos="0.01 0.0182000037 0.000999933148" quat="0.707105 -0.707108 -0 -0" size="0.01 0.001 0.013" group="3" contype="8" conaffinity="1" rgba="0.15 0.15 0.15 0.3"/>
+                      <geom type="mesh" mesh="link7" material="piper" group="1" contype="0" conaffinity="0"/>
+                      <geom type="mesh" mesh="link7" group="3" contype="8" conaffinity="1" rgba="0.2 0.2 0.2 0.2"/>
+                    </body>
+                    <body name="left_link8" pos="0 0.000000 0.1358" quat="-2.59734347e-06 -2.59735301e-06 -0.70710808 -0.707105483">
+                      <joint name="left_joint8" type="slide" axis="0 0 -1" range="-0.035 0" damping="0.5" armature="0.01"/>
+                      <inertial pos="0.000651231850419722 -0.0491929869131991 0.00972258769184024" mass="0.025" fullinertia="7.371e-05 7.81e-06 7.47e-05 -1.13e-06 2.1e-07 -1.372e-05"/>
+                      <geom type="box" pos="-0.00999999265 0.0182000037 0.00100000661" quat="-2.59734e-06 2.59735e-06 0.707108 0.707105" size="0.01 0.001 0.013" group="3" contype="8" conaffinity="1" rgba="0.15 0.15 0.15 0.3"/>
+                      <geom type="mesh" mesh="link8" material="piper" group="1" contype="0" conaffinity="0"/>
+                      <geom type="mesh" mesh="link8" group="3" contype="8" conaffinity="1" rgba="0.2 0.2 0.2 0.2"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+    <body name="right_mount" pos="-0.3565 -0.3050 0.7120" euler="0 0 0.026180">
+      <inertial pos="-0.00473641164191482 2.56829134630247E-05 0.041451518036016" mass="1.02" fullinertia="0.00267433 0.00282612 0.00089624 -7.3e-07 -0.00017389 4e-07"/>
+      <geom type="mesh" mesh="base_link" material="piper" group="1" contype="0" conaffinity="0"/>
+      <geom type="mesh" mesh="base_link" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+      <body name="right_link1" pos="0 0 0.123" quat="1 0 0 0">
+        <joint name="right_joint1" type="hinge" axis="0 0 1" range="-2.618 2.618" damping="0.5" armature="0.01"/>
+        <inertial pos="0.000121504734057468 0.000104632162460536 -0.00438597309559853" mass="0.71" fullinertia="0.00048916 0.00040472 0.00043982 -3.6e-07 -2.24e-06 -2.42e-06"/>
+        <geom type="mesh" mesh="link1" material="piper" group="1" contype="0" conaffinity="0"/>
+        <geom type="mesh" mesh="link1" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+        <body name="right_link2" pos="0 0 0" quat="0.0480084367 -0.048013443 -0.705476101 -0.705473862">
+          <joint name="right_joint2" type="hinge" axis="-0 -0 -1" range="-3.14 -0" damping="0.5" armature="0.01"/>
+          <inertial pos="0.198666145229743 -0.010926924140076 0.00142121714502687" mass="1.17" fullinertia="0.00116918 0.0678538 0.0677449 -0.00180037 0.00025146 -4.55e-06"/>
+          <geom type="mesh" mesh="link2" material="piper" group="1" contype="0" conaffinity="0"/>
+          <geom type="mesh" mesh="link2" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+          <body name="right_link3" pos="0.28503 0 0" quat="0.62399622 0 0 -0.781427359">
+            <joint name="right_joint3" type="hinge" axis="-0 -0 -1" range="-0 2.967" damping="0.5" armature="0.01"/>
+            <inertial pos="-0.0202737662122021 -0.133914995944595 -0.000458682652737356" mass="0.5" fullinertia="0.0136171 0.00045024 0.0138032 0.00165794 -4.8e-07 -4.5e-07"/>
+            <geom type="mesh" mesh="link3" material="piper" group="1" contype="0" conaffinity="0"/>
+            <geom type="mesh" mesh="link3" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+            <body name="right_link4" pos="-0.021984 -0.25075 0" quat="0.707105483 0.70710808 0 0">
+              <joint name="right_joint4" type="hinge" axis="-0 -0 -1" range="-1.745 1.745" damping="0.5" armature="0.01"/>
+              <inertial pos="-9.66635791618542E-05 0.000876064475651083 -0.00496880904640868" mass="0.38" fullinertia="0.00018501 0.00018965 0.00015484 5.4e-07 1.2e-06 -8.41e-06"/>
+              <geom type="mesh" mesh="link4" material="piper" group="1" contype="0" conaffinity="0"/>
+              <geom type="mesh" mesh="link4" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+              <body name="right_link5" pos="0 0 0" quat="0.707105483 -0.70710808 0 0">
+                <joint name="right_joint5" type="hinge" axis="-0 -0 -1" range="-1.22 1.22" damping="0.5" armature="0.01"/>
+                <inertial pos="-4.10554118924211E-05 -0.0566486692356075 -0.0037205791677906" mass="0.383" fullinertia="0.00166169 0.0001851 0.00164321 6e-08 -7e-08 1.026e-05"/>
+                <geom type="mesh" mesh="link5" material="piper" group="1" contype="0" conaffinity="0"/>
+                <geom type="mesh" mesh="link5" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+                <body name="right_link6" pos="8.8259E-05 -0.091 0" quat="0.707105483 0.70710808 0 0">
+                  <joint name="right_joint6" type="hinge" axis="0 0 1" range="-2.0944 2.0944" damping="0.5" armature="0.01"/>
+                  <inertial pos="-8.82590762930069E-05 9.0598378529832E-06 -0.002" mass="0.007" fullinertia="5.73016e-07 5.73016e-07 1.06739e-06 -1.98305e-22 -7.27919e-23 -3.4146e-24"/>
+                  <geom type="mesh" mesh="link6" material="piper" group="1" contype="0" conaffinity="0"/>
+                  <geom type="mesh" mesh="link6" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+                  <body name="right_gripper_base" pos="0 0 0" quat="1 0 0 0">
+                    <inertial pos="-0.000183807162235591 8.05033155577911E-05 0.0321436689908876" mass="0.45" fullinertia="0.00092934 0.00071447 0.00039442 3.4e-07 -7.38e-06 5e-08"/>
+                    <geom type="mesh" mesh="gripper_base" material="piper" group="1" contype="0" conaffinity="0"/>
+                    <geom type="mesh" mesh="gripper_base" group="3" contype="0" conaffinity="0" rgba="0.2 0.2 0.2 0.2"/>
+                    <camera name="right" pos="-0.0884 -0.0155 0.0084" quat="0.18479618 0.74973897 -0.62407171 -0.11948368" fovy="32.186"/>
+                    <body name="right_link7" pos="0 0.000000 0.1358" quat="0.707105483 0.70710808 0 0">
+                      <joint name="right_joint7" type="slide" axis="0 0 1" range="0 0.035" damping="0.5" armature="0.01"/>
+                      <inertial pos="0.00065123185041968 -0.0491929869131989 0.00972258769184025" mass="0.025" fullinertia="7.371e-05 7.81e-06 7.47e-05 -1.13e-06 2.1e-07 -1.372e-05"/>
+                      <geom type="box" pos="0.01 0.0182000037 0.000999933148" quat="0.707105 -0.707108 -0 -0" size="0.01 0.001 0.013" group="3" contype="8" conaffinity="1" rgba="0.15 0.15 0.15 0.3"/>
+                      <geom type="mesh" mesh="link7" material="piper" group="1" contype="0" conaffinity="0"/>
+                      <geom type="mesh" mesh="link7" group="3" contype="8" conaffinity="1" rgba="0.2 0.2 0.2 0.2"/>
+                    </body>
+                    <body name="right_link8" pos="0 0.000000 0.1358" quat="-2.59734347e-06 -2.59735301e-06 -0.70710808 -0.707105483">
+                      <joint name="right_joint8" type="slide" axis="0 0 -1" range="-0.035 0" damping="0.5" armature="0.01"/>
+                      <inertial pos="0.000651231850419722 -0.0491929869131991 0.00972258769184024" mass="0.025" fullinertia="7.371e-05 7.81e-06 7.47e-05 -1.13e-06 2.1e-07 -1.372e-05"/>
+                      <geom type="box" pos="-0.00999999265 0.0182000037 0.00100000661" quat="-2.59734e-06 2.59735e-06 0.707108 0.707105" size="0.01 0.001 0.013" group="3" contype="8" conaffinity="1" rgba="0.15 0.15 0.15 0.3"/>
+                      <geom type="mesh" mesh="link8" material="piper" group="1" contype="0" conaffinity="0"/>
+                      <geom type="mesh" mesh="link8" group="3" contype="8" conaffinity="1" rgba="0.2 0.2 0.2 0.2"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+    <geom name="rig_column" type="box" size="0.0300 0.0300 0.1985" pos="-0.5072 -0.0065 0.9105" material="rig_black" contype="0" conaffinity="0"/>
+    <geom name="rig_cam_housing" type="box" size="0.0320 0.0320 0.0450" pos="-0.50724 -0.006493 1.164" xyaxes="0.0683854 -0.997067 -0.0343586 0.59486 0.0131033 0.803723" material="rig_black" contype="0" conaffinity="0"/>
+    <camera name="middle" pos="-0.4712 -0.0031 1.1373" xyaxes="0.0683854 -0.997067 -0.0343586 0.59486 0.0131033 0.803723" fovy="37.373"/>
+  </worldbody>
+  <contact>
+    <exclude body1="left_mount" body2="left_link1"/>
+    <exclude body1="left_mount" body2="left_link2"/>
+    <exclude body1="left_mount" body2="left_link3"/>
+    <exclude body1="left_mount" body2="left_link4"/>
+    <exclude body1="left_mount" body2="left_link5"/>
+    <exclude body1="left_mount" body2="left_link6"/>
+    <exclude body1="left_mount" body2="left_gripper_base"/>
+    <exclude body1="left_mount" body2="left_link7"/>
+    <exclude body1="left_mount" body2="left_link8"/>
+    <exclude body1="left_link1" body2="left_link2"/>
+    <exclude body1="left_link1" body2="left_link3"/>
+    <exclude body1="left_link1" body2="left_link4"/>
+    <exclude body1="left_link1" body2="left_link5"/>
+    <exclude body1="left_link1" body2="left_link6"/>
+    <exclude body1="left_link1" body2="left_gripper_base"/>
+    <exclude body1="left_link1" body2="left_link7"/>
+    <exclude body1="left_link1" body2="left_link8"/>
+    <exclude body1="left_link2" body2="left_link3"/>
+    <exclude body1="left_link2" body2="left_link4"/>
+    <exclude body1="left_link2" body2="left_link5"/>
+    <exclude body1="left_link2" body2="left_link6"/>
+    <exclude body1="left_link2" body2="left_gripper_base"/>
+    <exclude body1="left_link2" body2="left_link7"/>
+    <exclude body1="left_link2" body2="left_link8"/>
+    <exclude body1="left_link3" body2="left_link4"/>
+    <exclude body1="left_link3" body2="left_link5"/>
+    <exclude body1="left_link3" body2="left_link6"/>
+    <exclude body1="left_link3" body2="left_gripper_base"/>
+    <exclude body1="left_link3" body2="left_link7"/>
+    <exclude body1="left_link3" body2="left_link8"/>
+    <exclude body1="left_link4" body2="left_link5"/>
+    <exclude body1="left_link4" body2="left_link6"/>
+    <exclude body1="left_link4" body2="left_gripper_base"/>
+    <exclude body1="left_link4" body2="left_link7"/>
+    <exclude body1="left_link4" body2="left_link8"/>
+    <exclude body1="left_link5" body2="left_link6"/>
+    <exclude body1="left_link5" body2="left_gripper_base"/>
+    <exclude body1="left_link5" body2="left_link7"/>
+    <exclude body1="left_link5" body2="left_link8"/>
+    <exclude body1="left_link6" body2="left_gripper_base"/>
+    <exclude body1="left_link6" body2="left_link7"/>
+    <exclude body1="left_link6" body2="left_link8"/>
+    <exclude body1="left_gripper_base" body2="left_link7"/>
+    <exclude body1="left_gripper_base" body2="left_link8"/>
+    <exclude body1="left_link7" body2="left_link8"/>
+    <exclude body1="right_mount" body2="right_link1"/>
+    <exclude body1="right_mount" body2="right_link2"/>
+    <exclude body1="right_mount" body2="right_link3"/>
+    <exclude body1="right_mount" body2="right_link4"/>
+    <exclude body1="right_mount" body2="right_link5"/>
+    <exclude body1="right_mount" body2="right_link6"/>
+    <exclude body1="right_mount" body2="right_gripper_base"/>
+    <exclude body1="right_mount" body2="right_link7"/>
+    <exclude body1="right_mount" body2="right_link8"/>
+    <exclude body1="right_link1" body2="right_link2"/>
+    <exclude body1="right_link1" body2="right_link3"/>
+    <exclude body1="right_link1" body2="right_link4"/>
+    <exclude body1="right_link1" body2="right_link5"/>
+    <exclude body1="right_link1" body2="right_link6"/>
+    <exclude body1="right_link1" body2="right_gripper_base"/>
+    <exclude body1="right_link1" body2="right_link7"/>
+    <exclude body1="right_link1" body2="right_link8"/>
+    <exclude body1="right_link2" body2="right_link3"/>
+    <exclude body1="right_link2" body2="right_link4"/>
+    <exclude body1="right_link2" body2="right_link5"/>
+    <exclude body1="right_link2" body2="right_link6"/>
+    <exclude body1="right_link2" body2="right_gripper_base"/>
+    <exclude body1="right_link2" body2="right_link7"/>
+    <exclude body1="right_link2" body2="right_link8"/>
+    <exclude body1="right_link3" body2="right_link4"/>
+    <exclude body1="right_link3" body2="right_link5"/>
+    <exclude body1="right_link3" body2="right_link6"/>
+    <exclude body1="right_link3" body2="right_gripper_base"/>
+    <exclude body1="right_link3" body2="right_link7"/>
+    <exclude body1="right_link3" body2="right_link8"/>
+    <exclude body1="right_link4" body2="right_link5"/>
+    <exclude body1="right_link4" body2="right_link6"/>
+    <exclude body1="right_link4" body2="right_gripper_base"/>
+    <exclude body1="right_link4" body2="right_link7"/>
+    <exclude body1="right_link4" body2="right_link8"/>
+    <exclude body1="right_link5" body2="right_link6"/>
+    <exclude body1="right_link5" body2="right_gripper_base"/>
+    <exclude body1="right_link5" body2="right_link7"/>
+    <exclude body1="right_link5" body2="right_link8"/>
+    <exclude body1="right_link6" body2="right_gripper_base"/>
+    <exclude body1="right_link6" body2="right_link7"/>
+    <exclude body1="right_link6" body2="right_link8"/>
+    <exclude body1="right_gripper_base" body2="right_link7"/>
+    <exclude body1="right_gripper_base" body2="right_link8"/>
+    <exclude body1="right_link7" body2="right_link8"/>
+  </contact>
+  <actuator>
+    <position name="left_act_1" joint="left_joint1" kp="1200" kv="40" ctrllimited="false" forcerange="-100 100"/>
+    <position name="left_act_2" joint="left_joint2" kp="1200" kv="40" ctrllimited="false" forcerange="-100 100"/>
+    <position name="left_act_3" joint="left_joint3" kp="1000" kv="35" ctrllimited="false" forcerange="-100 100"/>
+    <position name="left_act_4" joint="left_joint4" kp="800" kv="25" ctrllimited="false" forcerange="-100 100"/>
+    <position name="left_act_5" joint="left_joint5" kp="600" kv="20" ctrllimited="false" forcerange="-100 100"/>
+    <position name="left_act_6" joint="left_joint6" kp="400" kv="15" ctrllimited="false" forcerange="-100 100"/>
+    <position name="left_act_7" joint="left_joint7" kp="3000" kv="60" ctrllimited="false" forcerange="-10 10"/>
+    <position name="left_act_8" joint="left_joint8" kp="3000" kv="60" ctrllimited="false" forcerange="-10 10"/>
+    <position name="right_act_1" joint="right_joint1" kp="1200" kv="40" ctrllimited="false" forcerange="-100 100"/>
+    <position name="right_act_2" joint="right_joint2" kp="1200" kv="40" ctrllimited="false" forcerange="-100 100"/>
+    <position name="right_act_3" joint="right_joint3" kp="1000" kv="35" ctrllimited="false" forcerange="-100 100"/>
+    <position name="right_act_4" joint="right_joint4" kp="800" kv="25" ctrllimited="false" forcerange="-100 100"/>
+    <position name="right_act_5" joint="right_joint5" kp="600" kv="20" ctrllimited="false" forcerange="-100 100"/>
+    <position name="right_act_6" joint="right_joint6" kp="400" kv="15" ctrllimited="false" forcerange="-100 100"/>
+    <position name="right_act_7" joint="right_joint7" kp="3000" kv="60" ctrllimited="false" forcerange="-10 10"/>
+    <position name="right_act_8" joint="right_joint8" kp="3000" kv="60" ctrllimited="false" forcerange="-10 10"/>
+  </actuator>
+  <sensor>
+    <jointactuatorfrc name="left_force_1" joint="left_joint1"/>
+    <jointactuatorfrc name="left_force_2" joint="left_joint2"/>
+    <jointactuatorfrc name="left_force_3" joint="left_joint3"/>
+    <jointactuatorfrc name="left_force_4" joint="left_joint4"/>
+    <jointactuatorfrc name="left_force_5" joint="left_joint5"/>
+    <jointactuatorfrc name="left_force_6" joint="left_joint6"/>
+    <jointactuatorfrc name="left_force_gripper" joint="left_joint7"/>
+    <jointactuatorfrc name="right_force_1" joint="right_joint1"/>
+    <jointactuatorfrc name="right_force_2" joint="right_joint2"/>
+    <jointactuatorfrc name="right_force_3" joint="right_joint3"/>
+    <jointactuatorfrc name="right_force_4" joint="right_joint4"/>
+    <jointactuatorfrc name="right_force_5" joint="right_joint5"/>
+    <jointactuatorfrc name="right_force_6" joint="right_joint6"/>
+    <jointactuatorfrc name="right_force_gripper" joint="right_joint7"/>
+  </sensor>
+</mujoco>
